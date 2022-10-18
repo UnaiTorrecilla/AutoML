@@ -1,6 +1,33 @@
+from typing import Union
+import warnings
 import pandas as pd
 import numpy as np
 import sys
+from sklearn.impute import SimpleImputer
+
+
+def select_dtypes(data: pd.DataFrame) -> pd.DataFrame:
+    previous_num_columns = data.shape[1]
+    data = data.select_dtypes(include=np.number)
+
+    new_num_columns = data.shape[1]
+    if new_num_columns != previous_num_columns:
+        warnings.warn(f'{previous_num_columns - new_num_columns} columns were removed due to not being numeric.'
+                      ' In a future release the categorical variables will also be treated.')
+
+    return data
+
+def clean_data(data: pd.DataFrame) -> pd.DataFrame:
+    imputer = SimpleImputer(strategy='median')
+
+    if data.shape[0] == 1:
+        data_array = data.values.reshape(1, -1)
+    elif data.shape[1] == 1:
+        data_array = data.values.reshape(-1, 1)
+    else:
+        data_array = data.values
+
+    return pd.DataFrame(imputer.fit_transform(data_array), columns=data.columns)
 
 class CleanPandas:
 
@@ -14,7 +41,7 @@ class CleanPandas:
         Returns the file extension of the file
         '''
         extension = self.route.split('.')[-1]
-        print(f'Identified .{extension} extension. If this is not correct, please review that '
+        print(f'\nIdentified .{extension} extension. If this is not correct, please review that '
               f'the extension is held after the last "." of the inserted route.')
         return extension
     
@@ -37,7 +64,7 @@ class CleanPandas:
             # of duplicated arguments due to the recursive call.
 
             sep = input(
-                'Please input the separator used in the csv file, or continue if it is already correct: ')
+                'Please input the separator used in the csv file, or "continue" if it is already correct: ')
                 
             self._proceed_recursivity_if_needed(sep, **kwargs)
 
@@ -62,47 +89,74 @@ class CleanPandas:
         # If the data has only one column, it is probably due to the separator being wrong.
         self._check_data_dimensions(**kwargs)
 
-        
-
-    def _read_excel(self, **kwargs):
-        self.data = pd.read_excel(self.route, **kwargs)
-
-        # If the data has only one column, it is probably due to the separator being wrong.
-        self._check_data_dimensions(**kwargs)
     
 
-    def _read_json(self, **kwargs):
-        self.data = pd.read_json(self.route, **kwargs)
-
-        # Check that the json format is appropiate for Pandas to read it.
+    def _read_excel(self, sheet_name: Union[int, str]=0,**kwargs):
+        '''
+        This method reads an excel file and stores it in the attribute self.data.
         
+        Parameters
+        ----------
+        sheet_name: int or str.
+            The sheet name or number to read from the excel file. If not specified, the first sheet will be read.
+            It is not yet supported to read multiple sheets at once.
 
+        **kwargs: dict
+            Parameters of the pandas.read_excel function if desired. If not, the default parameters will be used.
+        '''
+        if not isinstance(sheet_name, int) and not isinstance(sheet_name, str):
+            raise NotImplementedError(f'The sheet_name parameter must be an integer or a string. '
+                                        f'Found {type(sheet_name)}. Please review the documentation.')
+        self.data = pd.read_excel(self.route, sheet_name=sheet_name, **kwargs)
 
-        # If the data has only one column, it is probably due to the separator being wrong.
-        self._check_data_dimensions(**kwargs)
+    
 
+    # def _read_json(self, **kwargs):
+    #     '''
+    #     This method reads a json file and stores it in the attribute self.data.
+
+    #     Parameters
+    #     ----------
+    #     **kwargs: dict
+    #         Parameters of the pandas.read_json function if desired. If not, the default parameters will be used.
+    #     '''
+    #     try:
+    #         self.data = pd.read_json(self.route, **kwargs)
+    #     except ValueError:
+    #         self.data = pd.read_json(self.route, lines=True, **kwargs)
 
     def _read_parquet(self, **kwargs):
-        self.data = pd.read_parquet(self.route, **kwargs)
+        '''
+        This method reads a parquet file and stores it in the attribute self.data.
 
-        # If the data has only one column, it is probably due to the separator being wrong.
-        self._check_data_dimensions(**kwargs)
+        Parameters
+        ----------
+        **kwargs: dict
+            Parameters of the pandas.read_parquet function if desired. If not, the default parameters will be used.
+        '''
+        self.data = pd.read_parquet(self.route, **kwargs)
 
 
     def read_data(self):
         extension = self._get_file_extension()
         if extension == 'csv':
             self._read_csv()
-        elif extension == 'xlsx':
+        elif extension == 'xlsx' or extension == 'xls':
             self._read_excel()
-        elif extension == 'json':
-            self._read_json()
+        # elif extension == 'json':
+        #     self._read_json()
         elif extension == 'parquet':
             self._read_parquet()
         else:
             raise NotImplementedError(f'Extension {extension} not implemented. Please review the '
                                       f'available extensions in the documentation.')
+        
+        print(self.data.head())
 
+        print('\nThe previous is a sample of the found data. If it is not correct please run the script again'
+                ' and select the proper options.')
+        
+        return self.data
 
 class CleanNumpy:
     pass
@@ -115,6 +169,8 @@ class CleanText:
 if __name__ == '__main__':
     hi = CleanPandas(sys.argv[1])
     # hi._get_file_extension()
-    hi._read_csv()
-    print(hi.data.head())
+    data = hi.read_data()
+    data_cleaned = clean_data(select_dtypes(data))
+    print(data_cleaned)
+    # data = select_dtypes(clean_data(data))
 
