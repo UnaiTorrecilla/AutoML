@@ -1,4 +1,5 @@
-from .DataProcessing.rename_this import ReadData
+from .DataReading.DataReader import ReadData
 
-a = ReadData('./test_data/Maths.csv')
+
+data_reader = ReadData('./test_data/Maths.csv')
 
