@@ -1,33 +1,6 @@
 from typing import Union
-import warnings
 import pandas as pd
 import numpy as np
-import sys
-from sklearn.impute import SimpleImputer
-
-
-def select_dtypes(data: pd.DataFrame) -> pd.DataFrame:
-    previous_num_columns = data.shape[1]
-    data = data.select_dtypes(include=np.number)
-
-    new_num_columns = data.shape[1]
-    if new_num_columns != previous_num_columns:
-        warnings.warn(f'{previous_num_columns - new_num_columns} columns were removed due to not being numeric.'
-                      ' In a future release the categorical variables will also be treated.')
-
-    return data
-
-def clean_data(data: pd.DataFrame) -> pd.DataFrame:
-    imputer = SimpleImputer(strategy='median')
-
-    if data.shape[0] == 1:
-        data_array = data.values.reshape(1, -1)
-    elif data.shape[1] == 1:
-        data_array = data.values.reshape(-1, 1)
-    else:
-        data_array = data.values
-
-    return pd.DataFrame(imputer.fit_transform(data_array), columns=data.columns)
 
 class ReadData:
 
@@ -172,13 +145,4 @@ class ReadData:
                 ' and select the proper options.')
         
         return self.data
-
-
-    
-
-
-if __name__ == '__main__':
-    hi = ReadData(sys.argv[1])
-    data = hi.read_data()
-    data_cleaned = clean_data(select_dtypes(data))
 
