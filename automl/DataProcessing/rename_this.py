@@ -29,7 +29,7 @@ def clean_data(data: pd.DataFrame) -> pd.DataFrame:
 
     return pd.DataFrame(imputer.fit_transform(data_array), columns=data.columns)
 
-class CleanPandas:
+class ReadData:
 
 
     def __init__(self, route: str) -> None:
@@ -135,11 +135,24 @@ class CleanPandas:
             Parameters of the pandas.read_parquet function if desired. If not, the default parameters will be used.
         '''
         self.data = pd.read_parquet(self.route, **kwargs)
+    
+    def _read_numpy(self, **kwargs):
+        '''
+        This method reads a numpy file and stores it in the attribute self.data. It only accepts .npy
+        file extensions.
+
+        Parameters
+        ----------
+        **kwargs: dict
+            Parameters of the np.load function if desired. If not, the default parameters will be used.
+        '''
+        self.data = pd.DataFrame(np.load(self.route, **kwargs))
+        
 
 
     def read_data(self):
         extension = self._get_file_extension()
-        if extension == 'csv':
+        if extension == 'csv' or extension == 'txt':
             self._read_csv()
         elif extension == 'xlsx' or extension == 'xls':
             self._read_excel()
@@ -147,6 +160,8 @@ class CleanPandas:
         #     self._read_json()
         elif extension == 'parquet':
             self._read_parquet()
+        elif extension == 'npy':
+            self._read_numpy()
         else:
             raise NotImplementedError(f'Extension {extension} not implemented. Please review the '
                                       f'available extensions in the documentation.')
@@ -158,19 +173,12 @@ class CleanPandas:
         
         return self.data
 
-class CleanNumpy:
-    pass
 
-
-class CleanText:
-    pass 
+    
 
 
 if __name__ == '__main__':
-    hi = CleanPandas(sys.argv[1])
-    # hi._get_file_extension()
+    hi = ReadData(sys.argv[1])
     data = hi.read_data()
     data_cleaned = clean_data(select_dtypes(data))
-    print(data_cleaned)
-    # data = select_dtypes(clean_data(data))
 
