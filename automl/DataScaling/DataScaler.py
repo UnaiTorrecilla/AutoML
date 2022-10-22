@@ -28,7 +28,7 @@ class ScaleData:
         self._separate_target_and_training_data()
 
 
-    def _separate_target_and_training_data(self) -> pd.DataFrame:
+    def _separate_target_and_training_data(self) -> None:
         
         if isinstance(self.target, str):
             self.target = self.data.columns.get_loc(self.target)
@@ -39,7 +39,7 @@ class ScaleData:
         return None
     
 
-    def _select_dtypes(self) -> pd.DataFrame:
+    def select_dtypes(self) -> pd.DataFrame:
         
         previous_num_columns = self.train_data.shape[1]
         self.train_data = self.train_data.select_dtypes(include=np.number)
@@ -52,7 +52,7 @@ class ScaleData:
         return self.train_data
 
 
-    def _clean_data(self) -> pd.DataFrame:
+    def clean_data(self) -> pd.DataFrame:
         imputer = SimpleImputer(strategy='median')
 
         warnings.warn('The data will be cleaned by replacing the missing values with the median of the column. In future releases more'
@@ -85,20 +85,13 @@ class ScaleData:
         }
 
     
-    def _scale_data(self, scaler: Union[StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler, 
+    def scale_data(self, scaler: Union[StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler, 
                                     QuantileTransformer, PowerTransformer, Normalizer]) -> pd.DataFrame:
         '''
         This method scales the data using the scaling method selected by the user.
         '''
 
-        return scaler.fit_transform(self.train_data)
-    
-    def main(self, scaler: Union[StandardScaler, MinMaxScaler, RobustScaler, MaxAbsScaler,
-                                QuantileTransformer, PowerTransformer, Normalizer]) -> pd.DataFrame:
-
-        self._select_dtypes()
-        self._clean_data()
-
-        scaled_data = self._scale_data(scaler)
+        scaled_train_data = scaler.fit_transform(self.train_data)
+        scaled_test_data = scaler.transform(self.test_data)
         
-        return scaled_data
+        return scaled_train_data, scaled_test_data
