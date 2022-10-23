@@ -55,8 +55,13 @@ for scaling_method in scaling_methods:
 
 # Convert the results to a DataFrame
 results_df = pd.DataFrame(results).T
+print('\nThe obtained metrics have been the following:')
+print(results_df)
+
 if args.path_to_save_metrics:
+    print(f'\nSaving metrics to {args.path_to_save_metrics}')
     results_df.to_csv(args.path_to_save_metrics)
+    print('The metrics have been correctly saved.')
 
 
 
