@@ -23,10 +23,10 @@ class ModelData:
         self.test_size = test_size
 
         self.xtr, self.xte, self.ytr, self.yte = train_test_split(self.train_data.values, self.target_data.values, 
-        test_size=self.test_size, stratify=None if self.is_numeric_variable(self.target_data) else self.target_data)
+        test_size=self.test_size, stratify=None if self.is_target_variable_numeric() else self.target_data)
 
 
-    def is_numeric_variable(self):
+    def is_target_variable_numeric(self):
         return is_numeric_dtype(self.target_data)
 
 
@@ -56,23 +56,31 @@ class ModelData:
         '''
         Function to create a pool of models.
         '''
-        if self.is_numeric_variable():
+        if self.is_target_variable_numeric():
             return self._create_regression_models_pool()
         else:
             return self._create_classification_models_pool()
             
 
-    def train_algorithm_and_return_predictions(self, model):
+    def train_algorithm_and_return_predictions(self, model, xtr_scaled: np.ndarray=None, xte_scaled: np.ndarray=None):
         '''
         Function to fit a model and return the predictions.
         Parameters
         ----------
         model: sklearn model
             Model to fit.
-        
+        xtr_scaled: numpy.ndarray
+            Scaled training data. If None, the unscaled training data will be used.
+        xte_scaled: numpy.ndarray
+            Scaled test data. If None, the unscaled test data will be used.
         '''
-        model.fit(self.xtr, self.ytr)
-        return model.predict(self.xte)
+        if xtr_scaled is None:
+            xtr_scaled = self.xtr
+        if xte_scaled is None:
+            xte_scaled = self.xte
+
+        model.fit(xtr_scaled, self.ytr)
+        return model.predict(xte_scaled)
     
 
     def _evaluate_regression_model(self, model, predictions: np.ndarray):
@@ -138,7 +146,7 @@ class ModelData:
         '''
         Function to evaluate the performance of a model.
         '''
-        if self.is_numeric_variable():
+        if self.is_target_variable_numeric():
             return self._evaluate_regression_model(model=model, predictions=predictions)
         else:
             return self._evaluate_classification_model(model=model, predictions=predictions)
