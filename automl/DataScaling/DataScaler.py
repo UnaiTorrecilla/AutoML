@@ -9,9 +9,7 @@ from sklearn.preprocessing import StandardScaler, MinMaxScaler, RobustScaler, Ma
 
 
 class ScaleData:
-    '''
-    This class is used to scale the data. It is used in the DataModeler class.
-    '''
+
 
     def __init__(self, data: pd.DataFrame, target: Union[str, int]) -> None:
         '''
@@ -66,7 +64,7 @@ class ScaleData:
             data_array = self.X.values
 
         self.X = pd.DataFrame(imputer.fit_transform(data_array), columns=self.X.columns)
-        
+
         return None
 
 

@@ -17,6 +17,16 @@ class ModelData:
     
 
     def __init__(self, train_data: pd.DataFrame, target_data: pd.DataFrame, test_size: float=0.2):
+        '''
+        Parameters
+        ----------
+        train_data: pandas.DataFrame
+            Training data. All the exogenous variables.
+        target_data: pandas.DataFrame
+            Target data. The endogenous variable.
+        test_size: float
+            Size of the test data. Default is 0.2.
+        '''
 
         self.train_data = train_data
         self.target_data = target_data
@@ -26,35 +36,42 @@ class ModelData:
         test_size=self.test_size, stratify=None if self.is_target_variable_numeric() else self.target_data)
 
 
-    def is_target_variable_numeric(self):
+    def is_target_variable_numeric(self) -> bool:
         return is_numeric_dtype(self.target_data)
 
 
     @staticmethod
-    def _create_regression_models_pool():
+    def _create_regression_models_pool() -> dict:
 
         return {
-            # 'xgb': XGBRegressor(),
             'rf': RandomForestRegressor()
+            # 'xgb': XGBRegressor(),
             # 'lgbm': LGBMRegressor(),
             # 'catboost': CatBoostRegressor()
         }
     
 
     @staticmethod
-    def _create_classification_models_pool():
+    def _create_classification_models_pool() -> dict:
         
         return  {
-            # 'xgb': XGBClassifier(),
+            'logistic': LogisticRegression(),
             'rf': RandomForestClassifier()
+            # 'xgb': XGBClassifier(),
             # 'lgbm': LGBMRegressor(),
             # 'catboost': CatBoostClassifier()
         }
 
 
-    def create_models_pool(self):
+    def create_models_pool(self) -> dict:
         '''
-        Function to create a pool of models.
+        Function to create a pool of models. It will create a pool of regression models if the target variable is numeric
+        and a pool of classification models if the target variable is categorical.
+
+        Returns
+        -------
+        models_pool: dict
+            Dictionary with the models.
         '''
         if self.is_target_variable_numeric():
             return self._create_regression_models_pool()
@@ -62,7 +79,7 @@ class ModelData:
             return self._create_classification_models_pool()
             
 
-    def train_algorithm_and_return_predictions(self, model, xtr_scaled: np.ndarray=None, xte_scaled: np.ndarray=None):
+    def train_algorithm_and_return_predictions(self, model, xtr_scaled: np.ndarray=None, xte_scaled: np.ndarray=None) -> np.ndarray:
         '''
         Function to fit a model and return the predictions.
         Parameters
@@ -73,6 +90,11 @@ class ModelData:
             Scaled training data. If None, the unscaled training data will be used.
         xte_scaled: numpy.ndarray
             Scaled test data. If None, the unscaled test data will be used.
+
+        Returns
+        -------
+        predictions: numpy.ndarray
+            Predictions of the model.
         '''
         if xtr_scaled is None:
             xtr_scaled = self.xtr
@@ -83,11 +105,11 @@ class ModelData:
         return model.predict(xte_scaled)
     
 
-    def _evaluate_regression_model(self, model, predictions: np.ndarray):
+    def _evaluate_regression_model(self, model, predictions: np.ndarray, cv: int) -> dict:
         '''
         Function to evaluate the performance of a regression model.
         Parameters
-        ----------
+        ---------- 
         model: sklearn model
             Model to evaluate.
         predictions: numpy.ndarray
@@ -95,6 +117,7 @@ class ModelData:
         
         Returns
         -------
+        A dictionary that includes all of the following metrics.
         train_score: float
             Score of the model on the training data.
         test_r2_score: float
@@ -104,17 +127,17 @@ class ModelData:
         test_mae_score: float
             Mean absolute error of the model on the test data.
         '''
-        cross_score = cross_val_score(model, self.xtr, self.ytr, cv=5, scoring='r2')
+        cross_score = cross_val_score(model, self.xtr, self.ytr, cv=cv, scoring='r2')
         train_score = np.mean(cross_score)
         test_r2_score = r2_score(self.yte, predictions)
         test_mse_score = mean_squared_error(self.yte, predictions)
         test_mae_score = mean_absolute_error(self.yte, predictions)
 
-        return {'train_r2_5cv': train_score, 'test_r2': test_r2_score, 
+        return {'train_r2': train_score, 'test_r2': test_r2_score, 
                 'test_mse': test_mse_score, 'test_mae': test_mae_score}
     
 
-    def _evaluate_classification_model(self, model, predictions: np.ndarray):
+    def _evaluate_classification_model(self, model, predictions: np.ndarray, cv: int) -> dict:
         '''
         Function to evaluate the performance of a classification model.
         Parameters
@@ -126,15 +149,17 @@ class ModelData:
         
         Returns
         -------
+        A dict that includes all of the following metrics.
         train_score: float
             Score of the model on the training data.
         test_accuracy_score: float
             Accuracy score of the model on the test data.
         test_roc_auc_score: float
             ROC AUC score of the model on the test data.
+    
         '''
 
-        cross_score = cross_val_score(model, self.xtr, self.ytr, cv=5, scoring='roc_auc')
+        cross_score = cross_val_score(model, self.xtr, self.ytr, cv=cv, scoring='roc_auc')
         train_score = np.mean(cross_score)
         test_accuracy_score = accuracy_score(self.yte, predictions)
         test_roc_auc_score = roc_auc_score(self.yte, predictions)
@@ -142,11 +167,14 @@ class ModelData:
         return {'train_auc': train_score, 'test_acc': test_accuracy_score, 'test_auc': test_roc_auc_score}
 
 
-    def evaluate_model(self, model, predictions: np.ndarray):
+    def evaluate_model(self, model, predictions: np.ndarray, cv: int) -> dict:
         '''
-        Function to evaluate the performance of a model.
+        Function to evaluate the performance of a model. It will return different metrics depending on the type of the
+        target variable. If the target variable is numeric, it will return the R2 score, the mean squared error and the
+        mean absolute error. If the target variable is categorical, it will return the accuracy score and the ROC AUC
+        score.
         '''
         if self.is_target_variable_numeric():
-            return self._evaluate_regression_model(model=model, predictions=predictions)
+            return self._evaluate_regression_model(model=model, predictions=predictions, cv=cv)
         else:
-            return self._evaluate_classification_model(model=model, predictions=predictions)
+            return self._evaluate_classification_model(model=model, predictions=predictions, cv=cv)
