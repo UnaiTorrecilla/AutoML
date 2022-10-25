@@ -14,8 +14,6 @@ p.add_argument('--data_path', type=str, help='Mandatory. Path to the data file.'
 p.add_argument('--target_var', type=str, help='Mandatory. Name of the target column.')
 p.add_argument('--test_size', type=float, help='Optional. Size of the test set. Default is 0.2.')
 p.add_argument('--cv', type=float, help='Optional. Number of cross validations to use when evaluating the model. Default is 5.')
-# p.add_argument('--save_model', type=str, help='Path to save the model.')
-# p.add_argument('--save_predictions', type=str, help='Path to save the predictions.')
 p.add_argument('--path_to_save_metrics', type=str, help='Optional. Path to save the metrics. It must be a file with the extension .csv.')
 args = p.parse_args()
 
