@@ -106,20 +106,7 @@ class ReadData:
         self.data = pd.read_excel(self.route, sheet_name=sheet_name, **kwargs)
 
         return None
-
-    # def _read_json(self, **kwargs):
-    #     '''
-    #     This method reads a json file and stores it in the attribute self.data.
-
-    #     Parameters
-    #     ----------
-    #     **kwargs: dict
-    #         Parameters of the pandas.read_json function if desired. If not, the default parameters will be used.
-    #     '''
-    #     try:
-    #         self.data = pd.read_json(self.route, **kwargs)
-    #     except ValueError:
-    #         self.data = pd.read_json(self.route, lines=True, **kwargs)
+        
 
     def _read_parquet(self, **kwargs) -> None:
         '''
