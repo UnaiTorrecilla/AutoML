@@ -1,6 +1,6 @@
-from DataReading.DataReader import ReadData
-from DataScaling.DataScaler import ScaleData
-from DataModeling.DataModeler import ModelData
+from .DataReading.DataReader import ReadData
+from .DataScaling.DataScaler import ScaleData
+from .DataModeling.DataModeler import ModelData
 import pandas as pd
 
 import argparse
@@ -11,12 +11,18 @@ warnings.filterwarnings('ignore')
 
 p = argparse.ArgumentParser()
 p.add_argument('--data_path', type=str, help='Mandatory. Path to the data file.')
-p.add_argument('--target_var', type=str, help='Mandatory. Name of the target column.')
+p.add_argument('--target_var', type=str, help='Mandatory. Name or position of the target column.')
 p.add_argument('--test_size', type=float, help='Optional. Size of the test set. Default is 0.2.')
 p.add_argument('--cv', type=float, help='Optional. Number of cross validations to use when evaluating the model. Default is 5.')
-p.add_argument('--path_to_save_metrics', type=str, help='Optional. Path to save the metrics. It must be a file with the extension .csv.')
+p.add_argument('--path_to_save_metrics', type=str, help='Optional. Path to save the metrics. It must be a file with the extension .csv.'
+                                                        'If not provided, the metrics will be printed in the console but not saved.')
 args = p.parse_args()
 
+if not args.data_path:
+    raise ValueError('You must provide a path to the data file with the argument --data_path.')
+
+if not args.target_var:
+    raise ValueError('You must provide the name of the target column with the argument --target_var.')
 
 data_reader = ReadData(args.data_path)
 data_reader.read_data()
