@@ -9,7 +9,7 @@
 project = 'mlforall'
 copyright = '2022, Unai Torrecilla'
 author = 'Unai Torrecilla'
-release = '0.3.2'
+release = '0.3.4'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
