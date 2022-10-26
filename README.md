@@ -10,7 +10,7 @@
 
 ## Main features
 These are some of the functionalities that mlforall offers:
-1. File extension asbtraction when reading data (only supported for `.csv`, `.txt`, `.xlsx`, `.xlsx`, `.parquet` and `.npy`)
+1. File extension asbtraction when reading data (only supported for `.csv`, `.txt`, `.xls`, `.xlsx`, `.parquet` and `.npy`)
 2. Automatic handling of non-numeric features and missing values.
 3. A pool with almost all the data-scaling methods available and the most common ML models.
 4. Automatic model evaluation and reporting.
@@ -39,14 +39,23 @@ As mentioned, usage from `.ipynb` files is also possible. As of version 0.1, the
 
 ```sh
 # MLForAll usage through .ipynb files
-from mlforall.DataReading import DataReader
-from mlforall.DataScaling import DataScaler
-from mlforall.DataModeling import DataModeler
+from mlforall import DataReader
+from mlforall import DataScaler
+from mlforall import DataModeler
 
 
 data_reader = DataReader.ReadData(*args, **kwargs)
 data_scaler = DataScaler.ScaleData(*args, **kwargs)
 data_modeler = DataModeler.ModelData(*args, **kwargs)
+```
+
+```sh
+# or
+import mlforall as ml
+
+data_reader = ml.DataReader.ReadData(*args, **kwargs)
+data_scaler = ml.DataScaler.ScaleData(*args, **kwargs)
+data_modeler = ml.DataModeler.ModelData(*args, **kwargs)
 ```
 
 
