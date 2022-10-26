@@ -3,4 +3,14 @@ env/
 .vscode/
 *.bat
 Makefile
+dist/
+*.html
+*.js
+*.css
+*.json
+*.buildinfo
+*.inv
+*.doctrees/
+*_static/
+*sources/
 ```
