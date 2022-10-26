@@ -34,23 +34,29 @@ class TestDataReader(unittest.TestCase):
         nice_first_csv_line = ['GP','F',18,'U','GT3','A',4,4,'at_home','teacher','course','mother',2,2,0,'yes','no','no','no','yes','yes','no','no',4,3,4,1,1,3,6,5,6,6]
         nice_last_csv_line = ['MS','M',19,'U','LE3','T',1,1,'other','at_home','course','father',1,1,0,'no','no','no','no','yes','yes','yes','no',3,2,3,3,3,5,5,8,9,9]
 
+        nice_first_excel_line = ['01 Andalucía', 110.528]
+        nice_last_excel_line = ['19 Melilla', 109.879]
+
         nice_first_npy_line = [18, 4, 4, 2, 2, 0, 4, 3, 4, 1, 1, 3, 6, 5, 6, 6]
         nice_last_npy_line = [19, 1, 1, 1, 1, 0, 3, 2, 3, 3, 3, 5, 5, 8, 9, 9]
 
-        good_lines = [nice_first_csv_line, nice_first_npy_line, nice_last_csv_line, nice_last_npy_line]
+        good_lines = [nice_first_csv_line, nice_first_excel_line, nice_first_npy_line, nice_last_csv_line, nice_last_excel_line, nice_last_npy_line]
 
 
         self.data_reader_csv.read_data()
-        # check_excel = self.data_reader_excel.read_data()
+        self.data_reader_excel.read_data()
         self.data_reader_npy.read_data()
 
         check_first_csv_line = self.data_reader_csv.data.iloc[0, :].tolist()
         check_last_csv_line = self.data_reader_csv.data.iloc[-1, :].tolist()
+        
+        check_first_excel_line = self.data_reader_excel.data.iloc[0, :].tolist()
+        check_last_excel_line = self.data_reader_excel.data.iloc[-1, :].tolist()
 
         check_first_npy_line = self.data_reader_npy.data.iloc[0, :].tolist()
         check_last_npy_line = self.data_reader_npy.data.iloc[-1, :].tolist()
 
-        check_lines = [check_first_csv_line, check_first_npy_line, check_last_csv_line, check_last_npy_line]
+        check_lines = [check_first_csv_line, check_first_excel_line, check_first_npy_line, check_last_csv_line, check_last_excel_line, check_last_npy_line]
 
 
         self.assertEqual(good_lines, check_lines)
