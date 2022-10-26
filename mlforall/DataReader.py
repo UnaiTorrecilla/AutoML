@@ -124,6 +124,7 @@ class ReadData:
 
         self.data = pd.read_parquet(self.route, **kwargs)
     
+
     def _read_numpy(self, **kwargs) -> None:
         '''
         This method reads a numpy file and stores it in the attribute self.data. It only accepts .npy
@@ -158,8 +159,6 @@ class ReadData:
             self._read_csv()
         elif extension == 'xlsx' or extension == 'xls':
             self._read_excel()
-        # elif extension == 'json':
-        #     self._read_json()
         elif extension == 'parquet':
             self._read_parquet()
         elif extension == 'npy':

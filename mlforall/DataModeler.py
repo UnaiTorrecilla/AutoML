@@ -2,11 +2,6 @@ import pandas as pd
 from pandas.api.types import is_numeric_dtype
 import numpy as np
 
-# from xgboost import XGBClassifier, XGBRegressor
-# from lightgbm import LGBMClassifier, LGBMRegressor
-# from catboost import CatBoostRegressor, CatBoostClassifier
-
-
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
@@ -45,9 +40,6 @@ class ModelData:
 
         return {
             'rf': RandomForestRegressor()
-            # 'xgb': XGBRegressor(),
-            # 'lgbm': LGBMRegressor(),
-            # 'catboost': CatBoostRegressor()
         }
     
 
@@ -57,9 +49,6 @@ class ModelData:
         return  {
             'logistic': LogisticRegression(),
             'rf': RandomForestClassifier()
-            # 'xgb': XGBClassifier(),
-            # 'lgbm': LGBMRegressor(),
-            # 'catboost': CatBoostClassifier()
         }
 
 
