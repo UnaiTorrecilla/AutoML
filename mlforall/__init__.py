@@ -1,13 +1,15 @@
 #__init__.py
-from mlforall import DataReading, DataScaling, DataModeling
+from mlforall.DataReader import ReadData
+from mlforall.DataScaler import ScaleData
+from mlforall.DataModeler import ModelData
 
 __all__ = [
-    'DataReading',
-    'DataScaling',
-    'DataModeling'
+    'DataReader',
+    'DataScaler',
+    'DataModeler'
 ]
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'
 
 __doc__ = '''
 

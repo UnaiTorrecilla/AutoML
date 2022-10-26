@@ -1,6 +1,6 @@
-from .DataReading.DataReader import ReadData
-from .DataScaling.DataScaler import ScaleData
-from .DataModeling.DataModeler import ModelData
+from .DataReader import ReadData
+from .DataScaler import ScaleData
+from .DataModeler import ModelData
 import pandas as pd
 
 import argparse
