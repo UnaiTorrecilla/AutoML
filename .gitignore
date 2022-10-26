@@ -14,4 +14,7 @@ dist/
 *_static/
 *sources/
 *.egg-info/
+MANIFEST
+*.cfg
+setup.py
 ```
