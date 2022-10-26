@@ -24,7 +24,7 @@ class ModelData:
             Training data. All the exogenous variables.
         target_data: pandas.DataFrame
             Target data. The endogenous variable.
-        test_size: float
+        test_size: float    
             Size of the test data. Default is 0.2.
         '''
 
@@ -33,10 +33,10 @@ class ModelData:
         self.test_size = test_size
 
         self.xtr, self.xte, self.ytr, self.yte = train_test_split(self.train_data.values, self.target_data.values, 
-        test_size=self.test_size, stratify=None if self.is_target_variable_numeric() else self.target_data)
+        test_size=self.test_size, stratify=None if self._is_target_variable_numeric() else self.target_data)
 
 
-    def is_target_variable_numeric(self) -> bool:
+    def _is_target_variable_numeric(self) -> bool:
         return is_numeric_dtype(self.target_data)
 
 
@@ -73,7 +73,7 @@ class ModelData:
         models_pool: dict
             Dictionary with the models.
         '''
-        if self.is_target_variable_numeric():
+        if self._is_target_variable_numeric():
             return self._create_regression_models_pool()
         else:
             return self._create_classification_models_pool()
@@ -174,7 +174,7 @@ class ModelData:
         mean absolute error. If the target variable is categorical, it will return the accuracy score and the ROC AUC
         score.
         '''
-        if self.is_target_variable_numeric():
+        if self._is_target_variable_numeric():
             return self._evaluate_regression_model(model=model, predictions=predictions, cv=cv)
         else:
             return self._evaluate_classification_model(model=model, predictions=predictions, cv=cv)
