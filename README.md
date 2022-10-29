@@ -61,8 +61,9 @@ data_modeler = ml.DataModeler.ModelData(*args, **kwargs)
 
 ## Dependencies
 - [Numpy. It offers comprehensive mathematical functions, random number generators, linear algebra routines, Fourier transforms, and more](https://numpy.org)
-- [Pandas. a fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
+- [Pandas. A fast, powerful, flexible and easy to use open source data analysis and manipulation tool,
 built on top of the Python programming language](https://pandas.pydata.org)
+- [Openpyxl. A python library to read/write excel files](https://openpyxl.readthedocs.io/en/stable/) 
 - [Scikit-learn. accesible, reusable, simple and efficient tools for predictive data analysis](https://scikit-learn.org/stable/)
 
 ## Where to get it
