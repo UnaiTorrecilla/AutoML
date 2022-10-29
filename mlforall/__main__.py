@@ -52,7 +52,7 @@ for scaling_method in scaling_methods:
         predictions = data_modeler.train_algorithm_and_return_predictions(model, xtr_scaled=xtr_scaled, xte_scaled=xte_scaled)
 
         # Calculate the metrics
-        metrics = data_modeler.evaluate_model(model=model, predictions=predictions, cv=args.cv if args.cv else 5)
+        metrics = data_modeler.evaluate_model(model=model, predictions=predictions, cv=int(args.cv) if args.cv else 5)
 
         # Store the results
         results[(scaling_method, model_name)] = metrics
